@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js & nodemon webpack -w"
+    "start": "npm run start-server & npm run build-watch",
+    "build-watch": "webpack -w",
+    "start-server": "nodemon main.js"
   },
   "repository": {
     "type": "git",
@@ -18,13 +20,19 @@
     "url": "https://github.com/tomweidner103/drone/issues"
   },
   "homepage": "https://github.com/tomweidner103/drone#readme",
-  "devDependencies": {
+  "dependencies": {
+    "ar-drone": "^0.3.3",
+    "axios": "^0.18.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "express": "^4.16.4",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "volleyball": "^1.5.1",
     "webpack": "^4.28.3",
     "webpack-cli": "^3.2.0"
   }
