@@ -7,8 +7,18 @@ export default class Main extends React.Component {
     super();
     this.fly = this.fly.bind(this);
   }
-  fly(name) {
-    Axios.get(`/api/drone/${name}`);
+  async fly(name) {
+    const {data} = await Axios.get(`/api/drone/${name}`);
+    if(name === 'battery'){
+        const minutes = this.minutes(data)
+        console.log('minutes left: ', minutes)
+    }
+    console.log(data)
+  }
+
+  minutes(time) {
+      const minutes = 24 * (time/100)
+      return minutes
   }
 
   render() {
@@ -30,10 +40,10 @@ export default class Main extends React.Component {
         </button>
         <button
           onClick={() => {
-            this.fly("reset");
+            this.fly("clockwise");
           }}
         >
-          reset
+          clockwise
         </button>
         <button
           onClick={() => {
@@ -41,6 +51,90 @@ export default class Main extends React.Component {
           }}
         >
           battery
+        </button>
+        <button
+          onClick={() => {
+            this.fly("navData");
+          }}
+        >
+          navData
+        </button>
+        <button
+          onClick={() => {
+            this.fly("up");
+          }}
+        >
+          up
+        </button>
+        <button
+          onClick={() => {
+            this.fly("down");
+          }}
+        >
+          down
+        </button>
+        <button
+          onClick={() => {
+            this.fly("calibrate");
+          }}
+        >
+          calibrate
+        </button>
+        <button
+          onClick={() => {
+            this.fly("pitchForward");
+          }}
+        >
+          pitchForward
+        </button>
+        <button
+          onClick={() => {
+            this.fly("pitchBack");
+          }}
+        >
+          pitchBack
+        </button>
+        <button
+          onClick={() => {
+            this.fly("stop");
+          }}
+        >
+          stop
+        </button>
+        <button
+          onClick={() => {
+            this.fly("leftYaw");
+          }}
+        >
+          leftYaw
+        </button>
+        <button
+          onClick={() => {
+            this.fly("rightYaw");
+          }}
+        >
+          rightYaw
+        </button>
+        <button
+          onClick={() => {
+            this.fly("leftRoll");
+          }}
+        >
+          leftRoll
+        </button>
+        <button
+          onClick={() => {
+            this.fly("rightRoll");
+          }}
+        >
+          rightRoll
+        </button>
+        <button
+          onClick={() => {
+            this.fly("disableEmergency");
+          }}
+        >
+          disableEmergency
         </button>
       </div>
     );
