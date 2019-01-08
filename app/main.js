@@ -2,28 +2,43 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Axios from "axios";
 
+
 export default class Main extends React.Component {
   constructor() {
     super();
     this.fly = this.fly.bind(this);
   }
   async fly(name) {
-    const {data} = await Axios.get(`/api/drone/${name}`);
-    if(name === 'battery'){
-        const minutes = this.minutes(data)
-        console.log('minutes left: ', minutes)
+    const { data } = await Axios.get(`/api/drone/${name}`);
+    if (name === "battery") {
+      const minutes = this.minutes(data);
+      console.log("minutes left: ", minutes);
     }
-    console.log(data)
+    console.log(data);
   }
 
   minutes(time) {
-      const minutes = 24 * (time/100)
-      return minutes
+    const minutes = 24 * (time / 100);
+    return minutes;
   }
 
   render() {
     return (
       <div>
+        <button
+          onClick={() => {
+            this.fly("flight1");
+          }}
+        >
+          flight1
+        </button>
+        <button
+          onClick={() => {
+            this.fly("video");
+          }}
+        >
+          video
+        </button>
         <button
           onClick={() => {
             this.fly("takeoff");
@@ -141,4 +156,7 @@ export default class Main extends React.Component {
   }
 }
 
-ReactDOM.render(<Main />, document.getElementById("app"));
+ReactDOM.render(
+    <Main />,
+  document.getElementById("app")
+);
