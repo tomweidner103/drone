@@ -1,7 +1,10 @@
 const router = require("express").Router();
+const fs = require("fs");
 const arDrone = require("ar-drone");
+const ffmpeg = require("ffmpeg");
 const client = arDrone.createClient();
 client.createRepl();
+require('ar-drone-png-stream')(client, {port: 4000 })
 
 const time = time => {
   setTimeout(async () => {
@@ -9,37 +12,65 @@ const time = time => {
   }, time);
 };
 
-router.get("/video", (req, res, next) => {
-  const pngStream = client.getPngStream();
-  pngStream
-  .on("error", console.log)
-  .on("data", pngBuffer => {
-    sendPng(pngBuffer);
-  });
-  function sendPng(buffer) {
-      console.log('buffy the vampire slayer', buffer)
-    res.write(
-      "--daboundary\nContent-Type: image/png\nContent-length: " +
-        buffer.length +
-        "\n\n"
-    );
-    res.write(buffer);
-  }
-});
+let numVid = 0;
+try {
+  new ffmpeg(
+    `/Users/tomsstuff/Class/drone/drone/movie_${++numVid}.mp4`,
+    (err, video) => {
+      if (!err) {
+        console.log("The video is ready to be processed");
+        // console.log("data", video.metadata);
+        // console.log("config", video.info_configuration);
+      } else {
+        console.log("Error: ", err);
+      }
+    }
+  );
+} catch (err) {
+  console.log("code", err.code);
+  console.log("msg", err.msg);
+}
 
-// router.get("/flight1", (req, res, next) => {
-//   client.after(2000, () => {
-//       client.up()
-//         .after(3000, () => {
-//             client.front()
-//         })
-//         .after(2000, () => {
-//             client.stop()
-//             client.land()
-//         })
-//   })
-//   res.json("flight one executing");
+// router.get("/streaming", (req, res, next) => {
+//     let png = null;
+
+//     if (!png) {
+//       png = client.getPngStream();
+//       png.on("error", function(err) {
+//         console.error("png stream ERROR: " + err);
+//       });
+//     }
+
+//     // res.writeHead(200, { 'Content-Type': 'multipart/x-mixed-replace; boundary=--daboundary' });
+//     png.on("data", sendPng);
+
+//     function sendPng(buffer) {
+//       console.log(buffer.length);
+//       // res.write(
+//       //   "--daboundary\nContent-Type: image/png\nContent-length: " +
+//       //     buffer.length +
+//       //     "\n\n"
+//       // );
+//       // res.write(buffer);
+//       res.end(new Buffer.from(buffer))
+//     }
 // });
+
+
+router.get("/flight1", (req, res, next) => {
+  client
+     .after(2000, async () => {
+       await client.clockwise(0.5)
+     })
+     .after(2000, async () => {
+       await client.right(0.1)
+     })
+     .after(2000, async () => {
+       await client.stop()
+       await client.land()
+     })
+  res.json("flight one executing");
+});
 
 router.get("/takeoff", async (req, res, next) => {
   await client.ftrim();
@@ -48,11 +79,37 @@ router.get("/takeoff", async (req, res, next) => {
   res.json("taking off");
 });
 
+router.get('/frontCameraView', (req,res,next) => {
+  client.config('video:video_channel', 0)
+  res.json('front')
+})
+
+router.get('/bottomCameraView', (req,res,next) => {
+  client.config('video:video_channel', 3)
+  res.json('bottom')
+})
+const arr = ['blinkGreenRed', 'blinkGreen', 'blinkRed', 'blinkOrange', 'snakeGreenRed',
+'fire', 'standard', 'red', 'green', 'redSnake', 'blank', 'rightMissile',
+'leftMissile', 'doubleMissile', 'frontLeftGreenOthersRed',
+'frontRightGreenOthersRed', 'rearRightGreenOthersRed',
+'rearLeftGreenOthersRed', 'leftGreenRightRed', 'leftRedRightGreen',
+'blinkStandard']
+
+router.get('/LED', (req,res,next) => {
+  const number = Math.floor(Math.random() * Math.floor(arr.length-1))
+  client.animateLeds(arr[number], 5, 2)
+  res.json('led show')
+})
+
 router.get("/land", async (req, res, next) => {
   time(2000);
   await client.land();
   res.json("landing");
 });
+router.get('/dance', (req,res,next) => {
+  client.animate('vzDance', 4000)
+  res.json('dancing')
+})
 
 router.get("/battery", (req, res, next) => {
   const batt = client.battery();
@@ -65,12 +122,12 @@ router.get("/navData", (req, res, next) => {
   console.log("data", data.demo);
 });
 router.get("/up", async (req, res) => {
-  await client.up(0.3);
+  await client.up(0.7);
   time(1000);
   res.send("down");
 });
 router.get("/down", async (req, res) => {
-  await client.down(0.3);
+  await client.down(0.7);
   time(1000);
   res.send("down");
 });
@@ -79,13 +136,13 @@ router.get("/calibrate", (req, res) => {
   res.send("calibrating");
 });
 router.get("/pitchForward", async (req, res) => {
-  await client.front(0.3);
-  time(1000);
+  await client.front(0.5);
+  time(2000);
   res.send("pitching forward");
 });
 router.get("/pitchBack", async (req, res) => {
-  await client.back(0.3);
-  time(1000);
+  await client.back(0.5);
+  time(2000);
   res.send("pitching back");
 });
 router.get("/stop", (req, res) => {

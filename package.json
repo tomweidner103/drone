@@ -22,6 +22,7 @@
   "homepage": "https://github.com/tomweidner103/drone#readme",
   "dependencies": {
     "ar-drone": "^0.3.3",
+    "ar-drone-png-stream": "^2.0.0",
     "axios": "^0.18.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
@@ -31,10 +32,14 @@
     "babel-preset-stage-2": "^6.24.1",
     "express": "^4.16.4",
     "ffmpeg": "0.0.4",
+    "homebrew": "^0.1.0",
+    "jquery": "^3.3.1",
+    "jsdom": "^13.1.0",
     "node-parrot-drone": "^0.1.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1",
+    "stream-transcoder": "0.0.5",
     "volleyball": "^1.5.1",
     "webpack": "^4.28.3",
     "webpack-cli": "^3.2.0"
